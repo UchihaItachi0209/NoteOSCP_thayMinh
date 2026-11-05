@@ -299,8 +299,9 @@ dig vietlott.vn NS
 **VHOST là gì**
 - Cơ chế cho phép nhiều ứng dụng web chạy trên một máy chủ vật lý
 - **Name-base** (phổ biến nhất): Phân biệt các host dựa vào Host header
-- **IP-base**: Phân biệt dựa vào IP (máy chủ có nhiều card mạng)
+- **IP-base**: Phân biêt dựa vào IP. Trên máy chủ có nhiều card mạng và có các IP khác nhau
 - **Port-base**: Mỗi port chạy một ứng dụng khác nhau
+- Phổ biển nhất là virtual host bằng namebase. Cách hoạt động: https://app.diagrams.net/#G1XMgQ4OQ5mA0dc5daHbKshCG_cI-QE7Rh#{"pageId"%3A"wmqm8iAw2aa3I2IJ3Wiu"}
 
 **VHOST enum với FFUF**
 ```bash
