@@ -470,6 +470,7 @@ Sử dụng **Param miner plugin** trong Burpsuite
 #### Static Enum API
 
 **Phân tích file JS min, map**
+**Tìm các endpoint có sẵn**
 ```bash
 curl http://public.lab.local/assets/app.abcd1234.js -o app.abcd1234.js
 curl http://public.lab.local/assets/app.abcd1234.js.map -o app.abcd1234.js.map
@@ -486,22 +487,33 @@ node -e "
 ```
 
 **Tìm API runtime bằng JS Hook**
-```javascript
-const origFetch = window.fetch;
-window.fetch = function(input, init = {}) {
-  const url = input instanceof Request ? input.url : input;
-  const method = (init.method || 'GET').toUpperCase();
-  console.log(`[Fetch] ${method} ${url}`);
-  if (init.body) console.log(`  Body:`, init.body);
-  return origFetch.apply(this, arguments);
-};
-```
+```/api/v1/internal/token-refresh```
+  - Truy cập public.lab.local
+  - Một số API path được build trong quá trình Runtime → API chỉ được build khi có một sự kiện khác đã xảy ra → Phân tích static không hiệu quả
+  - Cần sử dụng một biện pháp gọi là JS Hook: 
+    ```javascript
+    const origFetch = window.fetch;
+    window.fetch = function(input, init = {}) {
+      const url = input instanceof Request ? input.url : input;
+      const method = (init.method || 'GET').toUpperCase();
+      console.log(`[Fetch] ${method} ${url}`);
+      if (init.body) console.log(`  Body:`, init.body);
+      return origFetch.apply(this, arguments);
+    };
+    ```
 
 **Angular framework - các file JS**
-- `main.js` → App code chính, components, services, API calls, routes
-- `polyfills.js` → Tương thích trình duyệt cũ
-- `runtime.js` → webpack runtime / Angular module loader
-
+    - `main.js` → App code chính, components, services, API calls, routes
+    - `polyfills.js` → Tương thích trình duyệt cũ
+    - `runtime.js` → webpack runtime / Angular module loader
+- Phân tích framework angular
+    - Chức năng của file js
+        - Main.js → App code chính. Chứa Angular app, components, services, API calls, routes. chứa nhieuf config, logic, và endpoint API
+        - polyfills.js → Dùng để tương thích với trình duyệt cũ
+        - runtime.js → **webpack runtime / Angular module loader → App có nhiều module nhỏ ví dụ như quản lý người dùng, quản lý chart … khi app cần dùng module nào sẽ load module đấy**
+            - Chứa các thông tin về số và hash
+            - Cần thu thập thông tin để phân tích API endpoint
+        - Script: bundle js của bên thứ 3
 #### Dynamic Enum API
 
 **Tạo pattern**
